@@ -35,7 +35,7 @@ export default function NotebooksPage() {
     if (user) {
       const { data } = await supabase
         .from("courses")
-        .select("id, title, thumbnail_url, created_at")
+        .select("id, title, created_at")
         .eq("created_by", user.id)
         .order("created_at", { ascending: false })
       setNotebooks(data || [])
@@ -127,7 +127,7 @@ export default function NotebooksPage() {
               className="relative h-[180px] rounded-2xl overflow-hidden group cursor-pointer hover:scale-[1.03] transition-all duration-300 shadow-sm hover:shadow-md border border-border"
             >
               <img 
-                src={notebook.thumbnail_url || "/assets/hero-study.jpg"} 
+                src={"/assets/hero-study.jpg"} 
                 alt={notebook.title} 
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
               />

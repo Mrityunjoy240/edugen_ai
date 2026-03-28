@@ -19,7 +19,7 @@ export default async function DashboardPage() {
   const { data: courses } = await supabase
     .from("courses")
     .select("*")
-    .eq("is_published", true)
+    .eq("created_by", user.id)
     .order("created_at", { ascending: false })
 
   const { data: progress } = await supabase

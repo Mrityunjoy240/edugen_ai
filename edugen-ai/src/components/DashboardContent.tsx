@@ -1,6 +1,6 @@
 "use client"
 
-import { Play, ArrowRight, BookOpen, Clock, Award, TrendingUp, Sparkles } from "lucide-react"
+import { Play, ArrowRight, BookOpen, Clock, Award, TrendingUp, Sparkles, Plus } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"

@@ -70,7 +70,7 @@ export default function NotebooksPage() {
         setNotebookName("")
         setSelectedFile(null)
         await fetchNotebooks()
-        router.push(`/notebooks/${data.notebookId}`)
+        router.push(`/course-workspace/${data.notebookId}`)
       } else {
         alert(data.error || "Failed to create notebook")
       }
@@ -123,7 +123,7 @@ export default function NotebooksPage() {
           {notebooks.map((notebook) => (
             <div 
               key={notebook.id}
-              onClick={() => router.push(`/notebooks/${notebook.id}`)}
+              onClick={() => router.push(`/course-workspace/${notebook.id}`)}
               className="relative h-[180px] rounded-2xl overflow-hidden group cursor-pointer hover:scale-[1.03] transition-all duration-300 shadow-sm hover:shadow-md border border-border"
             >
               <img 

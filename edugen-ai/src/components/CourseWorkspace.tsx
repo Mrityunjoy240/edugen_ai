@@ -176,6 +176,7 @@ export function CourseWorkspace({
       if (!initialCourse || !initialUserId) {
         setLoading(true)
         const { data: { user } } = await supabase.auth.getUser()
+        console.log("AUTH STATE - user:", user?.id, "loading:", loading)
         if (user) {
           setUserId(user.id)
           
@@ -198,6 +199,7 @@ export function CourseWorkspace({
             .select("*")
             .eq("user_id", user.id)
             .eq("course_id", courseId)
+          console.log("SOURCES FETCH - courseId:", courseId, "userId:", user.id, "data:", sourcesData)
           setNotes(sourcesData || [])
 
           const { data: progressData } = await supabase
@@ -588,6 +590,7 @@ export function CourseWorkspace({
   }, [])
 
   const handleChat = async (e: React.FormEvent) => {
+    console.log("HANDLE SEND CALLED - input:", chatInput)
     e.preventDefault()
     if (!chatInput.trim() || chatLoading || !userId || !course) return
 
@@ -896,7 +899,7 @@ export function CourseWorkspace({
               <Input
                 placeholder="Upload a PDF or ask a question..."
                 value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
+                onChange={(e) => { console.log("INPUT CHANGE:", e.target.value); setChatInput(e.target.value) }}
                 disabled={chatLoading}
                 className="flex-1 h-12 bg-muted/30 border-border rounded-2xl focus-visible:ring-primary focus-visible:ring-offset-0 shadow-sm transition-all text-sm px-4 font-medium"
               />

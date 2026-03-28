@@ -132,11 +132,11 @@ export function DashboardContent({ user, profile, courses, progress }: Dashboard
             </Button>
           ) : (
             <Button 
-              onClick={() => router.push(courses.length > 0 ? `/course-workspace/${courses[0].id}` : '/course-workspace/1')}
+              onClick={() => courses.length > 0 ? router.push(`/course-workspace/${courses[0].id}`) : router.push("/notebooks")}
               className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2 px-6"
             >
               <Play className="h-4 w-4" />
-              Resume Learning
+              {courses.length > 0 ? "Resume Learning" : "Create Your First Notebook"}
             </Button>
           )}
         </div>

@@ -54,10 +54,10 @@ export async function POST(request: Request) {
     const { data: notebook, error: notebookError } = await supabase
       .from("courses")
       .insert({
+        user_id: user.id,
         title: notebookName,
         description: "Created from notebook",
         subject: "General",
-        thumbnail_url: "/assets/hero-study.jpg",
       })
       .select()
       .single()

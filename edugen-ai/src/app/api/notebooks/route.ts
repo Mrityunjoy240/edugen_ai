@@ -57,7 +57,6 @@ export async function POST(request: Request) {
         title: notebookName,
         description: "Created from notebook",
         subject: "General",
-        instructor: user.id,
         thumbnail_url: "/assets/hero-study.jpg",
       })
       .select()

@@ -36,7 +36,7 @@ export default function NotebooksPage() {
       const { data } = await supabase
         .from("courses")
         .select("id, title, thumbnail_url, created_at")
-        .eq("instructor", user.id)
+        .eq("created_by", user.id)
         .order("created_at", { ascending: false })
       setNotebooks(data || [])
     }

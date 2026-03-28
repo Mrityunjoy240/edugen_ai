@@ -197,7 +197,7 @@ export function CourseWorkspace({
           const { data: sourcesData } = await supabase
             .from("sources")
             .select("*")
-            .eq("user_id", user.id)
+            .eq("created_by", user.id)
             .eq("course_id", courseId)
           console.log("SOURCES FETCH - courseId:", courseId, "userId:", user.id, "data:", sourcesData)
           setNotes(sourcesData || [])

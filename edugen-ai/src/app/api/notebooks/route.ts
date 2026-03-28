@@ -36,14 +36,11 @@ function splitIntoChunks(text: string, chunkSize: number): string[] {
 export async function POST(request: Request) {
   try {
     const formData = await request.formData()
-    const title = formData.get("name") as string || formData.get("title") as string
-    const description = formData.get("description") as string
-    const subject = formData.get("subject") as string
-    const level = formData.get("level") as string
+    const notebookName = formData.get("name") as string || formData.get("title") as string
     const file = formData.get("file") as File | null
 
-    if (!title) {
-      return Response.json({ error: "Title required" }, { status: 400 })
+    if (!notebookName) {
+      return Response.json({ error: "Notebook name required" }, { status: 400 })
     }
 
     const supabase = await createClient()
@@ -59,11 +56,10 @@ export async function POST(request: Request) {
     const { data: notebook, error: notebookError } = await supabase
       .from("courses")
       .insert({
-        user_id: userId,
-        title: title,
-        description: description || null,
-        subject: subject || null,
-        level: level || null
+        title: notebookName,
+        description: "Personal notebook",
+        subject: "General",
+        created_by: userId
       })
       .select()
       .single()

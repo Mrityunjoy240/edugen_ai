@@ -588,9 +588,9 @@ export function CourseWorkspace({
     }
   }, [])
 
-  const handleChat = async (e: React.FormEvent) => {
+  const handleSend = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
     console.log("HANDLE SEND CALLED - input:", chatInput)
-    e.preventDefault()
     if (!chatInput.trim() || chatLoading || !userId || !course) return
 
     const userMessage: ChatMessage = {
@@ -881,7 +881,7 @@ export function CourseWorkspace({
           </div>
 
           <div className="border-t bg-background p-3 shrink-0 sticky bottom-0 z-20 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
-            <form onSubmit={handleChat} className="max-w-3xl mx-auto flex items-center gap-2">
+            <form onSubmit={(e) => handleSend(e)} className="max-w-3xl mx-auto flex items-center gap-2">
               <Button
                 type="button"
                 onClick={handleMicClick}
@@ -898,7 +898,8 @@ export function CourseWorkspace({
               <Input
                 placeholder="Upload a PDF or ask a question..."
                 value={chatInput}
-                onChange={(e) => { console.log("INPUT CHANGE:", e.target.value); setChatInput(e.target.value) }}
+                onChange={(e) => setChatInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); }}}
                 disabled={chatLoading}
                 className="flex-1 h-12 bg-muted/30 border-border rounded-2xl focus-visible:ring-primary focus-visible:ring-offset-0 shadow-sm transition-all text-sm px-4 font-medium"
               />
@@ -908,6 +909,7 @@ export function CourseWorkspace({
                 disabled={chatLoading || !chatInput.trim()}
                 variant="default" 
                 size="icon"
+                onClick={() => handleSend()}
                 className="h-12 w-12 shrink-0 transition-all rounded-xl"
               >
                 <Send className="h-5 w-5" />

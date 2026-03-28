@@ -195,22 +195,16 @@ export function DashboardContent({ user, profile, courses, progress }: Dashboard
           </div>
 
           {/* Suggested Notebooks */}
-          {[
-            { title: "AI Basics Notes", image: "/assets/course-coding.jpg" },
-            { title: "Python Notes", image: "/assets/course-marketing.jpg" },
-            { title: "DSA Notes", image: "/assets/hero-study.jpg" },
-            { title: "Data Analytics Notes", image: "/assets/course-data.jpg" },
-            { title: "Startup Guide", image: "/assets/course-design.jpg" }
-          ].map((note, i) => (
-            <div 
-              key={i}
-              onClick={() => router.push(`/notebooks/${encodeURIComponent(note.title)}`)}
+          {courses.map((course) => (
+            <div
+              key={course.id}
+              onClick={() => router.push(`/course-workspace/${course.id}`)}
               className="relative min-w-[240px] h-[160px] rounded-xl overflow-hidden group cursor-pointer hover:scale-[1.03] transition-all duration-300 shadow-sm hover:shadow-md shrink-0 border border-border"
             >
-              <img src={note.image} alt={note.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <img src="/assets/hero-study.jpg" alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300" />
               <div className="absolute bottom-3 left-3 text-white z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                <h3 className="text-md font-semibold tracking-tight">{note.title}</h3>
+                <h3 className="text-md font-semibold tracking-tight">{course.title}</h3>
               </div>
             </div>
           ))}

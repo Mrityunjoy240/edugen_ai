@@ -11,7 +11,6 @@ import { Card, CardContent } from "@/components/ui/card"
 interface Notebook {
   id: string
   title: string
-  thumbnail_url: string
   created_at: string
 }
 

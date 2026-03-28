@@ -1,0 +1,10 @@
+node_modules
+.next
+.env.local
+.env
+.env*.local
+*.log
+.DS_Store
+.vercel
+lovable_code/
+.env.local

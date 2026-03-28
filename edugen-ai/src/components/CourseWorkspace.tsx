@@ -194,12 +194,11 @@ export function CourseWorkspace({
             .order("chapter_number")
           setChapters(chaptersData || [])
 
-          const { data: sourcesData } = await supabase
+          const { data: sourcesData, error: sourcesError } = await supabase
             .from("sources")
             .select("*")
             .eq("user_id", user.id)
             .eq("course_id", courseId)
-          console.log("SOURCES FETCH - courseId:", courseId, "userId:", user.id, "data:", sourcesData)
           setNotes(sourcesData || [])
 
           const { data: progressData } = await supabase
@@ -242,7 +241,7 @@ export function CourseWorkspace({
         const formData = new FormData()
         formData.append("file", selectedFile)
         formData.append("userId", userId)
-        if (course) formData.append("courseId", course.id)
+        formData.append("courseId", courseId)
         if (uploadTitle) formData.append("title", uploadTitle)
         
         const response = await fetch("/api/upload", {

@@ -122,9 +122,9 @@ export function DashboardContent({ user, profile, courses, progress }: Dashboard
           <p className="text-muted-foreground mb-6 max-w-md">
             AI tracks your progress, suggests next lessons, and builds your career roadmap.
           </p>
-          {lastCourse ? (
+          {courses && courses.length > 0 ? (
             <Button 
-              onClick={() => router.push(`/course-workspace/${lastCourse.id}`)}
+              onClick={() => router.push(`/course-workspace/${courses[0].id}`)}
               className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2 px-6"
             >
               <Play className="h-4 w-4" />
@@ -132,11 +132,11 @@ export function DashboardContent({ user, profile, courses, progress }: Dashboard
             </Button>
           ) : (
             <Button 
-              onClick={() => courses.length > 0 ? router.push(`/course-workspace/${courses[0].id}`) : router.push("/notebooks")}
+              onClick={() => router.push("/notebooks")}
               className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2 px-6"
             >
-              <Play className="h-4 w-4" />
-              {courses.length > 0 ? "Resume Learning" : "Create Your First Notebook"}
+              <Plus className="h-4 w-4 mr-2" />
+              Create Your First Notebook
             </Button>
           )}
         </div>

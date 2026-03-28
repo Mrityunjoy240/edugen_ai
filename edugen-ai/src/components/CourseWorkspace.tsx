@@ -193,12 +193,12 @@ export function CourseWorkspace({
             .order("chapter_number")
           setChapters(chaptersData || [])
 
-          const { data: notesData } = await supabase
-            .from("notes")
+          const { data: sourcesData } = await supabase
+            .from("sources")
             .select("*")
             .eq("user_id", user.id)
             .eq("course_id", courseId)
-          setNotes(notesData || [])
+          setNotes(sourcesData || [])
 
           const { data: progressData } = await supabase
             .from("chapter_progress")
@@ -258,7 +258,7 @@ export function CourseWorkspace({
             .from("notes")
             .select("*")
             .eq("user_id", userId)
-            .eq("course_id", course?.id || null)
+            .eq("course_id", courseId)
           setNotes(newNotes || [])
         } else {
           alert(data.error || "Upload failed")
@@ -359,7 +359,7 @@ export function CourseWorkspace({
         body: JSON.stringify({
           type: toolType,
           userId,
-          courseId: course?.id || null,
+          courseId: courseId,
         }),
       })
       
@@ -607,7 +607,7 @@ export function CourseWorkspace({
         body: JSON.stringify({
           query: userMessage.content,
           userId,
-          courseId: course?.id || courseId,
+          courseId: courseId,
           language: selectedLanguage,
           context: type === "notebook" ? title : course?.subject
         }),
@@ -736,7 +736,7 @@ export function CourseWorkspace({
               <div className="space-y-1.5">
                 {notes.filter(n => 
                   n.title.toLowerCase().includes(sourceSearch.toLowerCase())
-                ).map((note) => (
+                ).map((note: any) => (
                   <button 
                     key={note.id} 
                     className={cn(
@@ -750,7 +750,7 @@ export function CourseWorkspace({
                         <FileText className="h-3.5 w-3.5 text-primary" />
                       </div>
                       <span className="font-semibold text-xs truncate group-hover:text-primary transition-colors">
-                        {note.title}
+                        {note.file_name}
                       </span>
                     </div>
                   </button>
@@ -882,18 +882,7 @@ export function CourseWorkspace({
             <form onSubmit={handleChat} className="max-w-3xl mx-auto flex items-center gap-2">
               <Button
                 type="button"
-                onClick={() => {
-                  const Speech = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-                  if (!Speech) return
-                  const recognition = new Speech()
-                  recognition.onstart = () => setIsListening(true)
-                  recognition.onend = () => setIsListening(false)
-                  recognition.onresult = (event: any) => {
-                    const transcript = event.results[0][0].transcript
-                    setChatInput(transcript)
-                  }
-                  recognition.start()
-                }}
+                onClick={handleMicClick}
                 variant="ghost"
                 size="icon"
                 className={cn(

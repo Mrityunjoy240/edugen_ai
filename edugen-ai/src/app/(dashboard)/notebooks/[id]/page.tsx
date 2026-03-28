@@ -1,59 +1,69 @@
 "use client"
 
 import { useParams } from "next/navigation"
+import { useState, useEffect } from "react"
 import { CourseWorkspace } from "@/components/CourseWorkspace"
-
-const notebookDataMap: Record<string, any> = {
-  "AI Basics": {
-    title: "AI Basics",
-    topics: ["Machine Learning", "Neural Networks", "NLP"],
-    suggestions: [
-      "Explain backpropagation",
-      "What is a neural network?",
-      "Summarize the intro concepts"
-    ],
-    files: ["ai_intro.pdf", "dl_basics.pdf"]
-  },
-  "Python": {
-    title: "Python Notebook",
-    topics: ["Loops", "Functions", "Decorators"],
-    suggestions: [
-      "Explain list comprehension",
-      "What is a decorator?",
-      "How do generators work?"
-    ],
-    files: ["python_cheatsheet.pdf"]
-  },
-  "Physics Notes": {
-    title: "Physics Notes",
-    topics: ["Kinematics", "Thermodynamics"],
-    suggestions: [
-      "Solve motion problem",
-      "What are Newton's Laws?",
-      "Explain entropy"
-    ],
-    files: ["kinematics_formulas.pdf"]
-  }
-}
+import { createClient } from "@/lib/supabase/client"
+import { Loader2 } from "lucide-react"
 
 export default function NotebookPage() {
   const params = useParams()
-  const idValue = params?.id ? decodeURIComponent(params.id as string) : ""
-  
-  // Find matched notebook or fallback
-  const data = notebookDataMap[idValue] || {
-    title: idValue || "Untitled Notebook",
-    topics: ["General Knowledge"],
-    suggestions: ["Summarize my notes", "Help me organize"],
-    files: []
+  const supabase = createClient()
+  const [loading, setLoading] = useState(true)
+  const [notebook, setNotebook] = useState<any>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchNotebook() {
+      const notebookId = params?.id as string
+      
+      if (!notebookId) {
+        setError("No notebook ID provided")
+        setLoading(false)
+        return
+      }
+
+      const { data, error: fetchError } = await supabase
+        .from("courses")
+        .select("*")
+        .eq("id", notebookId)
+        .single()
+
+      if (fetchError || !data) {
+        console.error("Notebook fetch error:", fetchError)
+        setError("Notebook not found")
+        setLoading(false)
+        return
+      }
+
+      setNotebook(data)
+      setLoading(false)
+    }
+
+    fetchNotebook()
+  }, [params?.id, supabase])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  if (error || !notebook) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-muted-foreground">{error || "Notebook not found"}</p>
+      </div>
+    )
   }
 
   return (
     <CourseWorkspace
-      courseId={`nb-${data.title.toLowerCase().replace(/\s+/g, '-')}`}
-      title={data.title}
+      courseId={notebook.id}
+      title={notebook.title}
       type="notebook"
-      data={data}
     />
   )
 }

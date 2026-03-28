@@ -6,18 +6,30 @@ import { Sparkles, BookOpen, MessageSquare, Compass, GraduationCap, ArrowRight }
 export default function HomePage() {
   return (
     <div className="min-h-screen">
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="border-b border-gray-100 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          {/* LEFT: LOGO */}
           <div className="flex items-center gap-2">
             <Sparkles className="h-6 w-6 text-primary" />
-            <span className="font-bold text-xl">EduGen AI</span>
+            <span className="font-bold text-xl tracking-tight text-foreground">EduGen AI</span>
           </div>
-          <div className="flex gap-4">
+
+          {/* CENTER: EMPTY FOR BALANCE (OR LINKS) */}
+          <div className="hidden md:flex flex-1 justify-center">
+            {/* Optional: Add landing page links here if needed later */}
+          </div>
+
+          {/* RIGHT: ACTIONS */}
+          <div className="flex items-center gap-4">
             <Link href="/login">
-              <Button variant="ghost">Sign In</Button>
+              <Button variant="ghost" className="font-medium text-muted-foreground hover:text-primary transition-colors">
+                Sign In
+              </Button>
             </Link>
             <Link href="/register">
-              <Button>Get Started</Button>
+              <Button className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 rounded-lg transition-all shadow-md shadow-orange-500/20">
+                Get Started
+              </Button>
             </Link>
           </div>
         </div>

@@ -1,153 +1,127 @@
-import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
-import Link from "next/link"
-import { BookOpen, ArrowRight, Filter } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
+"use client"
 
-export default async function CoursesPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { BookOpen, Rocket } from "lucide-react"
 
-  if (!user) {
-    redirect("/login")
+export default function CoursesPage() {
+  const router = useRouter()
+  
+  // Simulated user data
+  const userLevel = "college" // "school" | "college" | "professional"
+
+  // TASK 1: RECOMMENDED COURSES
+  const recommendedCourses = [
+    { title: "AI Basics", image: "/assets/course-coding.jpg" },
+    { title: "Data Analyst", image: "/assets/course-data.jpg" },
+    { title: "DSA", image: "/assets/hero-study.jpg" },
+    { title: "Python", image: "/assets/course-marketing.jpg" },
+    { title: "SQL", image: "/assets/course-coding.jpg" },
+    { title: "Startup", image: "/assets/course-design.jpg" }
+  ]
+
+  // TASK 6: COURSE DATA STRUCTURE
+  const allCourses = [
+    { title: "AI Basics", level: "school", image: "/assets/course-coding.jpg" },
+    { title: "Python", level: "school", image: "/assets/course-marketing.jpg" },
+    { title: "Math Fundamentals", level: "school", image: "/assets/hero-study.jpg" },
+    { title: "DSA", level: "college", image: "/assets/course-design.jpg" },
+    { title: "Operating Systems", level: "college", image: "/assets/course-data.jpg" },
+    { title: "DBMS", level: "college", image: "/assets/course-coding.jpg" },
+    { title: "Data Analyst", level: "professional", image: "/assets/course-marketing.jpg" },
+    { title: "Machine Learning", level: "professional", image: "/assets/hero-study.jpg" },
+    { title: "Startup Building", level: "professional", image: "/assets/course-design.jpg" }
+  ]
+
+  // TASK 7: FILTER LOGIC
+  const filteredCourses = allCourses.filter(
+    (course) => course.level === userLevel
+  )
+
+  const handleCourseClick = (title: string) => {
+    // TASK 3: Click Navigation
+    const slug = title.toLowerCase().replace(/\s+/g, "-")
+    router.push(`/notebooks/${slug}`)
   }
-
-  const { data: courses } = await supabase
-    .from("courses")
-    .select("*")
-    .eq("is_published", true)
-    .order("subject")
-
-  const { data: progress } = await supabase
-    .from("user_progress")
-    .select("*")
-    .eq("user_id", user.id)
-
-  const subjectColors: Record<string, { bg: string; border: string; text: string }> = {
-    Physics: { bg: "bg-blue-50", border: "border-blue-200", text: "text-blue-600" },
-    Chemistry: { bg: "bg-green-50", border: "border-green-200", text: "text-green-600" },
-    Mathematics: { bg: "bg-purple-50", border: "border-purple-200", text: "text-purple-600" },
-    Biology: { bg: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-600" },
-    Python: { bg: "bg-yellow-50", border: "border-yellow-200", text: "text-yellow-600" },
-    JavaScript: { bg: "bg-orange-50", border: "border-orange-200", text: "text-orange-600" },
-    SQL: { bg: "bg-cyan-50", border: "border-cyan-200", text: "text-cyan-600" },
-    DSA: { bg: "bg-rose-50", border: "border-rose-200", text: "text-rose-600" },
-    React: { bg: "bg-sky-50", border: "border-sky-200", text: "text-sky-600" },
-    Design: { bg: "bg-pink-50", border: "border-pink-200", text: "text-pink-600" },
-  }
-
-  // Group courses by level
-  const highSchoolCourses = courses?.filter(c => c.level === "high_school") || []
-  const collegeCourses = courses?.filter(c => c.level === "college") || []
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Header */}
-      <div className="flex items-center gap-2">
-        <BookOpen className="h-6 w-6 text-primary" />
-        <h1 className="text-2xl font-bold">All Courses</h1>
-      </div>
-
-      {/* High School Section */}
+    <div className="space-y-10 animate-fade-in p-4 md:p-6 max-w-7xl mx-auto">
+      
+      {/* Recommended for You Section */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">High School (NCERT)</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {highSchoolCourses.map((course) => {
-            const courseProgress = progress?.find(p => p.course_id === course.id)
-            const progressValue = courseProgress?.progress_percentage || 0
-            const color = subjectColors[course.subject] || { bg: "bg-muted", border: "border-border", text: "text-muted-foreground" }
-
-            return (
-              <Link key={course.id} href={`/dashboard/workspace/${course.id}`}>
-                <Card className="card-hover cursor-pointer overflow-hidden">
-                  <div className={`h-2 ${color.bg}`} />
-                  <CardContent className="p-5">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Badge variant="outline" className={`${color.bg} ${color.text} border-0`}>
-                        {course.subject}
-                      </Badge>
-                      <Badge variant="secondary">
-                        {course.level === "high_school" ? "NCERT" : "College"}
-                      </Badge>
-                    </div>
-                    <h3 className="font-semibold text-foreground mb-2 line-clamp-2">
-                      {course.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                      {course.description}
-                    </p>
-                    {progressValue > 0 && (
-                      <div className="mb-3">
-                        <div className="flex items-center justify-between text-sm mb-1">
-                          <span className="text-muted-foreground">Progress</span>
-                          <span className="font-medium text-primary">{progressValue}%</span>
-                        </div>
-                        <Progress value={progressValue} className="h-2" />
-                      </div>
-                    )}
-                    <Button className="w-full gap-1" size="sm">
-                      <span>{progressValue > 0 ? "Continue" : "Start"} Learning</span>
-                      <ArrowRight className="h-3 w-3" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Link>
-            )
-          })}
+        <h2 className="text-2xl font-bold text-foreground mb-6">Recommended for You</h2>
+        
+        {/* TASK 2: IMAGE-ONLY CARD DESIGN */}
+        <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
+          {recommendedCourses.map((course, idx) => (
+            <div 
+              key={idx}
+              onClick={() => handleCourseClick(course.title)}
+              className="relative min-w-[260px] h-[180px] rounded-2xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-md hover:scale-[1.03] transition-all duration-300 shrink-0 border border-border"
+            >
+              <img 
+                src={course.image} 
+                alt={course.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+              />
+              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300" />
+              <div className="absolute bottom-4 left-4 text-white z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                <h3 className="text-xl font-bold tracking-tight">{course.title}</h3>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* College Section */}
+      {/* All Courses Section */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">College & Professional</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {collegeCourses.map((course) => {
-            const courseProgress = progress?.find(p => p.course_id === course.id)
-            const progressValue = courseProgress?.progress_percentage || 0
-            const color = subjectColors[course.subject] || { bg: "bg-muted", border: "border-border", text: "text-muted-foreground" }
-
-            return (
-              <Link key={course.id} href={`/dashboard/workspace/${course.id}`}>
-                <Card className="card-hover cursor-pointer overflow-hidden">
-                  <div className={`h-2 ${color.bg}`} />
-                  <CardContent className="p-5">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Badge variant="outline" className={`${color.bg} ${color.text} border-0`}>
-                        {course.subject}
-                      </Badge>
-                      <Badge variant="secondary">
-                        {course.category}
-                      </Badge>
-                    </div>
-                    <h3 className="font-semibold text-foreground mb-2 line-clamp-2">
-                      {course.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                      {course.description}
-                    </p>
-                    {progressValue > 0 && (
-                      <div className="mb-3">
-                        <div className="flex items-center justify-between text-sm mb-1">
-                          <span className="text-muted-foreground">Progress</span>
-                          <span className="font-medium text-primary">{progressValue}%</span>
-                        </div>
-                        <Progress value={progressValue} className="h-2" />
-                      </div>
-                    )}
-                    <Button className="w-full gap-1" size="sm">
-                      <span>{progressValue > 0 ? "Continue" : "Start"} Learning</span>
-                      <ArrowRight className="h-3 w-3" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Link>
-            )
-          })}
+        <div className="flex items-center gap-2 mb-6">
+          <BookOpen className="h-6 w-6 text-primary" />
+          <h2 className="text-2xl font-bold text-foreground">All Courses</h2>
+          <span className="ml-2 text-xs font-bold uppercase tracking-widest bg-primary/10 text-primary px-2 py-1 rounded-full">
+            {userLevel}
+          </span>
         </div>
+
+        {/* TASK 8: DISPLAY COURSES */}
+        {filteredCourses.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {filteredCourses.map((course, idx) => (
+              <div 
+                key={idx}
+                onClick={() => handleCourseClick(course.title)}
+                className="relative h-[180px] rounded-2xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-md hover:scale-[1.03] transition-all duration-300 border border-border"
+              >
+                <img 
+                  src={course.image} 
+                  alt={course.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                />
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300" />
+                <div className="absolute top-4 right-4 z-10">
+                   <span className="text-[10px] font-bold uppercase tracking-widest bg-black/50 backdrop-blur-md text-white px-2 py-1 rounded-full border border-white/20">
+                     {course.level}
+                   </span>
+                </div>
+                <div className="absolute bottom-4 left-4 text-white z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                  <h3 className="text-xl font-bold tracking-tight">{course.title}</h3>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          /* TASK 9: EMPTY STATE */
+          <div className="p-12 text-center bg-card border border-border rounded-2xl text-muted-foreground flex flex-col items-center justify-center gap-4">
+            <div className="p-4 rounded-full bg-primary/10">
+              <Rocket className="h-8 w-8 text-primary" />
+            </div>
+            <p className="text-lg font-medium text-foreground">
+              Start your learning journey by exploring new topics 🚀
+            </p>
+          </div>
+        )}
       </div>
+
     </div>
   )
 }

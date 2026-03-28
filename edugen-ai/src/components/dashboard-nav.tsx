@@ -18,9 +18,10 @@ import {
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
-  { href: "/dashboard/upload", label: "Upload Notes", icon: Upload },
-  { href: "/dashboard/chat", label: "AI Chat", icon: MessageSquare },
-  { href: "/dashboard/career", label: "Career", icon: Compass },
+  { href: "/dashboard/courses", label: "Courses", icon: BookOpen },
+  { href: "/ai-mentor", label: "AI Mentor", icon: MessageSquare },
+  { href: "/analytics", label: "Analytics", icon: Sparkles },
+  { href: "/career", label: "Career", icon: Compass },
 ]
 
 export function DashboardNav({ user }: { user: any }) {

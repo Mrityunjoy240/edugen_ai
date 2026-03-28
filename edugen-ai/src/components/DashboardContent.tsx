@@ -1,8 +1,10 @@
 "use client"
 
-import { Play, ArrowRight, BookOpen, Clock, Award, TrendingUp } from "lucide-react"
+import { Play, ArrowRight, BookOpen, Clock, Award, TrendingUp, Sparkles } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 
@@ -51,6 +53,7 @@ const subjectColors: Record<string, { bg: string; border: string; text: string }
 const defaultColor = { bg: "bg-muted", border: "border-border", text: "text-muted-foreground" }
 
 export function DashboardContent({ user, profile, courses, progress }: DashboardContentProps) {
+  const router = useRouter()
   const userName = profile?.full_name || user?.email?.split("@")[0] || "Student"
   const firstName = userName.split(" ")[0]
 
@@ -111,149 +114,106 @@ export function DashboardContent({ user, profile, courses, progress }: Dashboard
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Hero Banner */}
-      <div className="hero-gradient rounded-2xl overflow-hidden">
-        <div className="flex flex-col md:flex-row items-center">
-          <div className="flex-1 p-6 md:p-10">
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground leading-tight mb-3">
-              Welcome Back, {firstName}
-            </h1>
-            <p className="text-lg text-muted-foreground mb-4 max-w-md">
-              Continue your personalized learning journey
-            </p>
-            {lastCourse ? (
-              <Link href={`/dashboard/workspace/${lastCourse.id}`}>
-                <Button className="gap-2 px-6">
-                  <Play className="h-4 w-4" />
-                  Resume Learning
-                </Button>
-              </Link>
-            ) : (
-              <Link href="/dashboard/courses">
-                <Button className="gap-2 px-6">
-                  <BookOpen className="h-4 w-4" />
-                  Start Learning
-                </Button>
-              </Link>
-            )}
-          </div>
-          <div className="md:w-[400px] p-4">
-            <div className="bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl p-6 text-center">
-              <div className="text-4xl font-bold text-primary mb-2">
-                {avgProgress || 0}%
-              </div>
-              <p className="text-sm text-muted-foreground">Overall Progress</p>
-            </div>
-          </div>
+      <div className="hero-gradient rounded-2xl overflow-hidden flex flex-col md:flex-row items-center">
+        <div className="flex-1 p-6 md:p-10">
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground leading-tight mb-3">
+            Welcome Back, Continue<br />Your Personalized Learning
+          </h1>
+          <p className="text-muted-foreground mb-6 max-w-md">
+            AI tracks your progress, suggests next lessons, and builds your career roadmap.
+          </p>
+          {lastCourse ? (
+            <Button 
+              onClick={() => router.push(`/course-workspace/${lastCourse.id}`)}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2 px-6"
+            >
+              <Play className="h-4 w-4" />
+              Resume Learning
+            </Button>
+          ) : (
+            <Button 
+              onClick={() => router.push(courses.length > 0 ? `/course-workspace/${courses[0].id}` : '/course-workspace/1')}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2 px-6"
+            >
+              <Play className="h-4 w-4" />
+              Resume Learning
+            </Button>
+          )}
+        </div>
+        <div className="md:w-[400px] p-4">
+          <img
+            src="/assets/hero-study.jpg"
+            alt="Study workspace"
+            className="rounded-xl object-cover w-full h-48 md:h-64"
+            width={768}
+            height={512}
+          />
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-6 text-center">
-            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mx-auto mb-3">
-              <BookOpen className="h-6 w-6 text-primary" />
+      {/* Create Smart Notebook Card */}
+      <Card className="border-primary/20 bg-primary/5 shadow-sm">
+        <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <Sparkles className="h-6 w-6 text-primary" />
             </div>
-            <div className="text-2xl font-bold">{enrolledCourses || courses.length}</div>
-            <p className="text-sm text-muted-foreground">Courses Available</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="pt-6 text-center">
-            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-success/10 mx-auto mb-3">
-              <Clock className="h-6 w-6 text-success" />
+            <div>
+              <h3 className="text-xl font-bold">Create Smart Notebook</h3>
+              <p className="text-muted-foreground">Upload notes, get AI summaries, quizzes & learning insights</p>
             </div>
-            <div className="text-2xl font-bold">42h</div>
-            <p className="text-sm text-muted-foreground">Hours Learned</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="pt-6 text-center">
-            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-warning/10 mx-auto mb-3">
-              <Award className="h-6 w-6 text-warning" />
-            </div>
-            <div className="text-2xl font-bold">{completedCourses}</div>
-            <p className="text-sm text-muted-foreground">Completed</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="pt-6 text-center">
-            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mx-auto mb-3">
-              <TrendingUp className="h-6 w-6 text-primary" />
-            </div>
-            <div className="text-2xl font-bold">{avgProgress || 0}%</div>
-            <p className="text-sm text-muted-foreground">Avg Score</p>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+          <Link href="/notebooks">
+            <Button size="lg" className="whitespace-nowrap bg-primary hover:bg-primary/90">
+              Create Notebook
+            </Button>
+          </Link>
+        </CardContent>
+      </Card>
 
-      {/* Your Subjects */}
+      {/* Stats Grid (Hidden per instructions) */}
+      {/* 
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        ... (Stats components were here)
+      </div> 
+      */}
+
+      {/* Notebooks / Recommended for You */}
       <div>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold">Your Subjects</h2>
-          <Link href="/dashboard/courses" className="text-primary text-sm font-medium flex items-center gap-1 hover:underline">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-foreground">Recommended for You</h2>
+          <Link href="/notebooks" className="text-primary text-sm font-medium flex items-center gap-1 hover:underline">
             View All <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {displaySubjects.map(({ subject, courses: subjectCourses, progress: subProgress }) => {
-            const color = subjectColors[subject] || defaultColor
-            
-            return (
-              <Link key={subject} href={`/dashboard/workspace/${subjectCourses[0].id}`}>
-                <Card className={`card-hover cursor-pointer ${color.bg} border ${color.border}`}>
-                  <CardContent className="p-5">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className={`font-semibold ${color.text}`}>{subject}</h3>
-                      <span className="text-2xl font-bold text-foreground">{subProgress}%</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      {subjectCourses.length} {subjectCourses.length === 1 ? "course" : "courses"}
-                    </p>
-                    <Progress value={subProgress} className="h-2" />
-                  </CardContent>
-                </Card>
-              </Link>
-            )
-          })}
-        </div>
-      </div>
+        <div className="flex gap-4 overflow-x-auto pb-6 pt-2 px-1 custom-scrollbar">
+          {/* Create New Notebook Card */}
+          <div className="min-w-[260px] h-[180px] border-2 border-dashed border-border rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-all hover:scale-[1.02] shadow-sm hover:shadow-md">
+            <div className="text-3xl text-muted-foreground mb-2 opacity-60">+</div>
+            <p className="text-sm font-semibold text-muted-foreground">Create new notebook</p>
+          </div>
 
-      {/* Recent Courses */}
-      <div>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold">Continue Learning</h2>
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {courses.slice(0, 4).map((course) => {
-            const courseProgress = progress.find(p => p.course_id === course.id)
-            const progressValue = courseProgress?.progress_percentage || 0
-            const color = subjectColors[course.subject] || defaultColor
-            
-            return (
-              <Link key={course.id} href={`/dashboard/workspace/${course.id}`}>
-                <Card className="card-hover cursor-pointer overflow-hidden">
-                  <div className={`h-2 ${color.bg}`} />
-                  <CardContent className="p-4">
-                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${color.bg} ${color.text}`}>
-                      {course.level === "high_school" ? "High School" : "College"}
-                    </span>
-                    <h3 className="font-semibold mt-3 mb-2 line-clamp-2">{course.title}</h3>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">{course.total_chapters} chapters</span>
-                      <span className="font-medium text-primary">{progressValue}%</span>
-                    </div>
-                    <Progress value={progressValue} className="h-1.5 mt-2" />
-                  </CardContent>
-                </Card>
-              </Link>
-            )
-          })}
+          {/* Suggested Notebooks */}
+          {[
+            { title: "AI Basics Notes", image: "/assets/course-coding.jpg" },
+            { title: "Python Notes", image: "/assets/course-marketing.jpg" },
+            { title: "DSA Notes", image: "/assets/hero-study.jpg" },
+            { title: "Data Analytics Notes", image: "/assets/course-data.jpg" },
+            { title: "Startup Guide", image: "/assets/course-design.jpg" }
+          ].map((note, i) => (
+            <div 
+              key={i}
+              onClick={() => router.push(`/notebooks/${encodeURIComponent(note.title)}`)}
+              className="relative min-w-[240px] h-[160px] rounded-xl overflow-hidden group cursor-pointer hover:scale-[1.03] transition-all duration-300 shadow-sm hover:shadow-md shrink-0 border border-border"
+            >
+              <img src={note.image} alt={note.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300" />
+              <div className="absolute bottom-3 left-3 text-white z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                <h3 className="text-md font-semibold tracking-tight">{note.title}</h3>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
